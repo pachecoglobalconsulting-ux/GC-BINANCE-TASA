@@ -1,35 +1,43 @@
+# captura_binance.py
 from playwright.sync_api import sync_playwright
 from PIL import Image
+import time
+
+def capturar_binance():
+    url = "https://p2p.binance.com/en/trade/sell/USDT?fiat=VES"
+
+    # Inicia Playwright y abre la página
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        page = browser.new_page()
+        page.goto(url)
+
+        # Esperar que cargue la página (ajustable)
+        page.wait_for_timeout(5000)
+
+        # Tomar screenshot completo
+        page.screenshot(path="full_precio.png", full_page=True)
+        browser.close()
+
+    # Abrir la imagen completa y recortar solo los primeros 5 anuncios
+    # Ajusta estas coordenadas según la resolución y tu página
+    try:
+        img = Image.open("full_precio.png")
+
+        # Por ejemplo, recortamos desde la parte superior, ancho completo, alto de ~500px (ajusta si necesitas)
+        left = 0
+        top = 0
+        right = img.width
+        bottom = 500  # alto aproximado de 5 anuncios
+
+        img_cropped = img.crop((left, top, right, bottom))
+        img_cropped.save("precio.png")
+        print("Captura recortada creada: precio.png")
+    except Exception as e:
+        print("Error al recortar la imagen:", e)
 
 # ===============================
-# Configuración
+# Bloque principal
 # ===============================
-url = "https://p2p.binance.com/en/trade/sell/USDT?fiat=VES"
-# Ajusta la caja según la resolución de tu navegador y el área de los anuncios
-# (left, top, right, bottom)
-caja_recorte = (0, 300, 1920, 1500)  # ejemplo: recorta la zona donde aparecen los primeros 4 anuncios
-
-# ===============================
-# Ejecutar Playwright
-# ===============================
-with sync_playwright() as p:
-    browser = p.chromium.launch(headless=False)  # False para depuración; True si quieres sin ver navegador
-    page = browser.new_page()
-    page.goto(url)
-
-    # esperar a que cargue JavaScript
-    page.wait_for_timeout(8000)  # 8 segundos; ajustar si la página es lenta
-
-    # screenshot completo de la página
-    page.screenshot(path="pagina_completa.png", full_page=True)
-
-    browser.close()
-
-# ===============================
-# Recortar la zona de los primeros 4 anuncios
-# ===============================
-imagen = Image.open("pagina_completa.png")
-imagen_recortada = imagen.crop(caja_recorte)
-imagen_recortada.save("precio.png")
-
-print("Captura de los primeros 4 anuncios creada: precio.png")
+if __name__ == "__main__":
+    capturar_binance()
