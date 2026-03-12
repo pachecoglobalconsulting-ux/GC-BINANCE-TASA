@@ -1,3 +1,6 @@
+import sys
+print("Python version:", sys.version)
+
 from flask import Flask, request
 import os
 
