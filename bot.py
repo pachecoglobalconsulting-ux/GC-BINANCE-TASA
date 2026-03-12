@@ -75,10 +75,16 @@ Por favor consulte la imagen adjunta para verificación de la tasa correspondien
 # ===============================
 # 4️⃣ Función para enviar imagen por WhatsApp Cloud API
 # ===============================
+import os
+import requests
+
+ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
+PHONE_NUMBER_ID = os.getenv("PHONE_NUMBER_ID")
+
 def enviar_imagen_whatsapp(numero, imagen, caption):
-    url = "https://graph.facebook.com/v18.0/TU_PHONE_NUMBER_ID/messages"
+    url = f"https://graph.facebook.com/v18.0/{PHONE_NUMBER_ID}/messages"
     headers = {
-        "Authorization": "Bearer TU_ACCESS_TOKEN",
+        "Authorization": f"Bearer {ACCESS_TOKEN}",
         "Content-Type": "application/json"
     }
     data = {
@@ -86,7 +92,7 @@ def enviar_imagen_whatsapp(numero, imagen, caption):
         "to": numero,
         "type": "image",
         "image": {
-            "link": "https://TU_SERVIDOR.com/precio.png",  # URL pública de la imagen
+            "link": f"https://TU_SERVIDOR.com/{imagen}",  # URL pública
             "caption": caption
         }
     }
