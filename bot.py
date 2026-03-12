@@ -1,7 +1,22 @@
+from flask import Flask, request
+import os
+
 import requests
 import subprocess
 from datetime import datetime
 
+app = Flask(__name__)
+
+VERIFY_TOKEN = "binance_token"
+
+@app.route("/webhook", methods=["GET"])
+def verify_webhook():
+    token = request.args.get("hub.verify_token")
+    challenge = request.args.get("hub.challenge")
+
+    if token == VERIFY_TOKEN:
+        return challenge
+    return "Verification token mismatch", 403
 # ===============================
 # 1️⃣ Función para ejecutar captura_binance.py
 # ===============================
