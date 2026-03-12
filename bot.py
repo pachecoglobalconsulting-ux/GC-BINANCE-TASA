@@ -130,3 +130,6 @@ if __name__ == "__main__":
             texto = generar_mensaje(tasa)
             print(texto)  # muestra mensaje en consola para prueba
             # enviar_imagen_whatsapp(telefono_usuario, "precio.png", texto)  # descomenta cuando tengas URL pública
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
