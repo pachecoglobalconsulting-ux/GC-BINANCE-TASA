@@ -20,7 +20,7 @@ def home():
     return "Bot Binance activo"
 
 # ===============================
-# Verificación del webhook
+# Verificación del webhook (GET)
 # ===============================
 @app.route("/webhook", methods=["GET"])
 def verify_webhook():
@@ -31,27 +31,27 @@ def verify_webhook():
     return "Verification token mismatch", 403
 
 # ===============================
-# Recibir mensajes de WhatsApp
+# Recibir mensajes de WhatsApp (POST)
 # ===============================
 @app.route("/webhook", methods=["POST"])
 def recibir_mensaje():
     data = request.json
     print("Mensaje recibido:", data)
 
-    # Aquí puedes procesar comandos
-    # Ejemplo: si el mensaje recibido es "/tasa", generar captura y enviar respuesta
+    # Extraer número y texto del mensaje
     try:
         numero = data["entry"][0]["changes"][0]["value"]["messages"][0]["from"]
         texto = data["entry"][0]["changes"][0]["value"]["messages"][0]["text"]["body"]
     except KeyError:
         return "No message", 200
 
+    # Procesar comando /tasa
     if texto.lower() == "/tasa":
-        tasa = obtener_tasa_binance()
-        generar_captura()
-        mensaje = generar_mensaje(tasa)
+        tasa = obtener_tasa_binance()          # Obtiene la tasa filtrada
+        generar_captura()                       # Genera precio.png
+        mensaje = generar_mensaje(tasa)        # Genera mensaje profesional
 
-        # Envía la imagen por WhatsApp (requiere que la imagen esté en un servidor público)
+        # Enviar la imagen por WhatsApp Cloud API
         enviar_imagen_whatsapp(numero, "precio.png", mensaje)
 
     return "ok", 200
@@ -123,7 +123,7 @@ Por favor consulte la imagen adjunta para verificación de la tasa correspondien
     return mensaje
 
 # ===============================
-# Función para enviar imagen por WhatsApp Cloud API
+# Enviar imagen por WhatsApp Cloud API
 # ===============================
 ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
 PHONE_NUMBER_ID = os.getenv("PHONE_NUMBER_ID")
@@ -139,7 +139,7 @@ def enviar_imagen_whatsapp(numero, imagen, caption):
         "to": numero,
         "type": "image",
         "image": {
-            "link": f"https://TU_SERVIDOR.com/{imagen}",  # Reemplaza con URL pública de la imagen
+            "link": f"https://TU_SERVIDOR.com/{imagen}",  # Reemplaza con URL pública
             "caption": caption
         }
     }
